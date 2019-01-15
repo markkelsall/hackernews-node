@@ -7,18 +7,50 @@ let links = [
         description: 'Fullstack tutorial for GraphQL'
     }
 ];
-
-// 2
+let idCount = links.length;
 const resolvers = {
     Query: {
         info: () => `This is the API of a Hackernews Clone`,
         feed: () => links,
+        link: (parent, args) => links.filter(link => link.id === args.id)[0]
     },
-    Link: {
-        id: parent => parent.id,
-        description: parent => parent.description,
-        url: parent => parent.url,
-    }
+    Mutation: {
+        post: (parent, args) => {
+            const link = {
+                id: `link-${idCount++}`,
+                description: args.description,
+                url: args.url,
+            }
+            links.push(link)
+            return link;
+        },
+        updateLink: (parent, args) => {
+            let updatedLink;
+            links = links.map(link => {
+                if (link.id === args.id) {
+                    updatedLink = {
+                        id: args.id,
+                        url: args.url,
+                        description: args.description
+                    };
+                    return updatedLink;
+                }
+                return link;
+            });
+            return updatedLink;
+        },
+        deleteLink: (parent, args) => {
+            let deletedLink;
+            links = links.map(link => {
+                if (link.id === args.id) {
+                    deletedLink = link;
+                    return;
+                }
+                return link;
+            });
+            return deletedLink;
+        }
+    },
 };
 
 // 3
